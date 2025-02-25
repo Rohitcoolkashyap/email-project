@@ -111,6 +111,9 @@ const emailReducer = (state, action) => {
   }
 };
 
+/**
+ * Provider component that wraps the app and provides email state management
+ */
 export const EmailProvider = ({ children }) => {
   const initialState = {
     emails: mockEmails,

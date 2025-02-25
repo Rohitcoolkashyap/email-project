@@ -10,7 +10,7 @@ const EmailItem = ({ email, onSelect, isTrash }) => {
   }, [email.time]);
 
   const previewText = useMemo(() => {
-    const firstLine = email.email_body.split('\n')[0];
+    const firstLine = email.email_body.split('\n').join(' ');
     return firstLine.length > 100 
       ? `${firstLine.substring(0, 100)}...`
       : firstLine;
