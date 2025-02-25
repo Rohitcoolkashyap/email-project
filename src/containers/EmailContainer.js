@@ -11,6 +11,14 @@ const EmailContainer = () => {
   const [selectedEmail, setSelectedEmail] = useState(null);
   const { state, dispatch } = useEmail();
 
+  const handleSelectEmail = useCallback((email) => {
+    setSelectedEmail(email);
+    // Mark email as read when opened
+    if (!email.isRead) {
+      dispatch({ type: 'TOGGLE_READ', payload: email.id });
+    }
+  }, [dispatch]);
+
   const handleCloseEmail = useCallback(() => {
     setSelectedEmail(null);
   }, []);
@@ -34,7 +42,7 @@ const EmailContainer = () => {
             onClose={handleCloseEmail} 
           />
         ) : (
-          <EmailList onSelectEmail={setSelectedEmail} />
+          <EmailList onSelectEmail={handleSelectEmail} />
         )}
       </main>
 
