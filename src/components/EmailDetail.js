@@ -31,7 +31,7 @@ const EmailDetail = ({ email, onClose }) => {
         <button onClick={onClose} className="back-button">
           Back to {isTrash ? 'Trash' : 'Inbox'}
         </button>
-        <div className="actions">
+        <div className="actions" style={{ opacity: 1 }}>
           <button onClick={handleToggleRead} className="read-button">
             {email.isRead ? 'Mark as Unread' : 'Mark as Read'}
           </button>

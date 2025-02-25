@@ -15,31 +15,49 @@ const emailReducer = (state, action) => {
         ),
         trashedEmails: state.trashedEmails.map(email =>
           email.id === action.payload ? { ...email, isRead: !email.isRead } : email
-        )
+        ),
+        toast: {
+          message: 'Email marked as ' + (state.emails.find(e => e.id === action.payload)?.isRead ? 'unread' : 'read'),
+          type: 'success'
+        }
       };
     case 'DELETE_EMAIL':
       const emailToTrash = state.emails.find(email => email.id === action.payload);
       return {
         ...state,
         emails: state.emails.filter(email => email.id !== action.payload),
-        trashedEmails: emailToTrash ? [...state.trashedEmails, emailToTrash] : state.trashedEmails
+        trashedEmails: emailToTrash ? [...state.trashedEmails, emailToTrash] : state.trashedEmails,
+        toast: {
+          message: 'Email moved to trash',
+          type: 'info'
+        }
       };
     case 'RESTORE_EMAIL':
       const emailToRestore = state.trashedEmails.find(email => email.id === action.payload);
       return {
         ...state,
         trashedEmails: state.trashedEmails.filter(email => email.id !== action.payload),
-        emails: emailToRestore ? [...state.emails, emailToRestore] : state.emails
+        emails: emailToRestore ? [...state.emails, emailToRestore] : state.emails,
+        toast: {
+          message: 'Email restored to inbox',
+          type: 'success'
+        }
       };
     case 'PERMANENT_DELETE':
       return {
         ...state,
-        trashedEmails: state.trashedEmails.filter(email => email.id !== action.payload)
+        trashedEmails: state.trashedEmails.filter(email => email.id !== action.payload),
+        toast: {
+          message: 'Email permanently deleted',
+          type: 'error'
+        }
       };
     case 'SET_SEARCH_QUERY':
       return { ...state, searchQuery: action.payload };
     case 'SET_CURRENT_CATEGORY':
       return { ...state, currentCategory: action.payload };
+    case 'CLEAR_TOAST':
+      return { ...state, toast: null };
     default:
       return state;
   }
@@ -51,7 +69,8 @@ export const EmailProvider = ({ children }) => {
     trashedEmails: [],
     deletedEmails: [],
     searchQuery: '',
-    currentCategory: 'inbox'
+    currentCategory: 'inbox',
+    toast: null
   };
 
   const [state, dispatch] = useReducer(emailReducer, initialState);
