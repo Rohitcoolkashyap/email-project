@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useEmail } from '../context/EmailContext';
 import EmailList from '../components/EmailList';
 import EmailDetail from '../components/EmailDetail';
@@ -10,6 +10,17 @@ import './EmailContainer.css';
 const EmailContainer = () => {
   const [selectedEmail, setSelectedEmail] = useState(null);
   const { state, dispatch } = useEmail();
+
+    // Update selected email when its read status changes
+    useEffect(() => {
+      if (selectedEmail) {
+        const updatedEmail = state.emails.find(email => email.id === selectedEmail.id) || 
+                           state.trashedEmails.find(email => email.id === selectedEmail.id);
+        if (updatedEmail && updatedEmail.isRead !== selectedEmail.isRead) {
+          setSelectedEmail(updatedEmail);
+        }
+      }
+    }, [state.emails, state.trashedEmails, selectedEmail]);
 
   const handleSelectEmail = useCallback((email) => {
     setSelectedEmail(email);
