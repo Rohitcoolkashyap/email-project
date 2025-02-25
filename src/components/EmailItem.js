@@ -2,7 +2,7 @@ import React from 'react';
 import { useEmail } from '../context/EmailContext';
 import './EmailItem.css';
 
-const EmailItem = ({ email, onSelect }) => {
+const EmailItem = ({ email, onSelect, isTrash }) => {
   const { dispatch } = useEmail();
   const formattedDate = new Date(email.time).toLocaleString();
 
@@ -13,7 +13,16 @@ const EmailItem = ({ email, onSelect }) => {
 
   const handleDelete = (e) => {
     e.stopPropagation();
-    dispatch({ type: 'DELETE_EMAIL', payload: email.id });
+    if (isTrash) {
+      dispatch({ type: 'PERMANENT_DELETE', payload: email.id });
+    } else {
+      dispatch({ type: 'DELETE_EMAIL', payload: email.id });
+    }
+  };
+
+  const handleRestore = (e) => {
+    e.stopPropagation();
+    dispatch({ type: 'RESTORE_EMAIL', payload: email.id });
   };
 
   return (
@@ -27,7 +36,7 @@ const EmailItem = ({ email, onSelect }) => {
       </div>
       <div className="title">{email.title}</div>
       <div className="preview">
-        {email.email_body.split("\n").slice(0, 3).join("\n")}...
+        {email.email_body.split('\n')[0].substring(0, 100)}...
       </div>
       <div className="actions">
         <button 
@@ -36,9 +45,20 @@ const EmailItem = ({ email, onSelect }) => {
         >
           {email.isRead ? 'Mark as Unread' : 'Mark as Read'}
         </button>
-        <button onClick={handleDelete} className="delete-button">
-          Delete
-        </button>
+        {isTrash ? (
+          <>
+            <button onClick={handleRestore} className="restore-button">
+              Restore
+            </button>
+            <button onClick={handleDelete} className="delete-button permanent">
+              Delete Permanently
+            </button>
+          </>
+        ) : (
+          <button onClick={handleDelete} className="delete-button">
+            Move to Trash
+          </button>
+        )}
       </div>
     </div>
   );

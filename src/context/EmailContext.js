@@ -12,23 +12,34 @@ const emailReducer = (state, action) => {
         ...state,
         emails: state.emails.map(email =>
           email.id === action.payload ? { ...email, isRead: !email.isRead } : email
+        ),
+        trashedEmails: state.trashedEmails.map(email =>
+          email.id === action.payload ? { ...email, isRead: !email.isRead } : email
         )
       };
     case 'DELETE_EMAIL':
+      const emailToTrash = state.emails.find(email => email.id === action.payload);
       return {
         ...state,
         emails: state.emails.filter(email => email.id !== action.payload),
-        deletedEmails: [...state.deletedEmails, state.emails.find(email => email.id === action.payload)]
+        trashedEmails: emailToTrash ? [...state.trashedEmails, emailToTrash] : state.trashedEmails
       };
-    case 'UNDO_DELETE':
-      const lastDeleted = state.deletedEmails[state.deletedEmails.length - 1];
+    case 'RESTORE_EMAIL':
+      const emailToRestore = state.trashedEmails.find(email => email.id === action.payload);
       return {
         ...state,
-        emails: [...state.emails, lastDeleted],
-        deletedEmails: state.deletedEmails.slice(0, -1)
+        trashedEmails: state.trashedEmails.filter(email => email.id !== action.payload),
+        emails: emailToRestore ? [...state.emails, emailToRestore] : state.emails
+      };
+    case 'PERMANENT_DELETE':
+      return {
+        ...state,
+        trashedEmails: state.trashedEmails.filter(email => email.id !== action.payload)
       };
     case 'SET_SEARCH_QUERY':
       return { ...state, searchQuery: action.payload };
+    case 'SET_CURRENT_CATEGORY':
+      return { ...state, currentCategory: action.payload };
     default:
       return state;
   }
@@ -37,13 +48,27 @@ const emailReducer = (state, action) => {
 export const EmailProvider = ({ children }) => {
   const initialState = {
     emails: mockEmails,
+    trashedEmails: [],
     deletedEmails: [],
     searchQuery: '',
+    currentCategory: 'inbox'
   };
 
   const [state, dispatch] = useReducer(emailReducer, initialState);
 
-  // Save to localStorage whenever state changes
+  // Load state from localStorage on mount
+  useEffect(() => {
+    const savedState = localStorage.getItem('emailState');
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      dispatch({ type: 'SET_EMAILS', payload: parsedState.emails });
+      if (parsedState.trashedEmails) {
+        dispatch({ type: 'SET_TRASHED_EMAILS', payload: parsedState.trashedEmails });
+      }
+    }
+  }, []);
+
+  // Save state to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('emailState', JSON.stringify(state));
   }, [state]);

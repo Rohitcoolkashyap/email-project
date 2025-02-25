@@ -78,6 +78,15 @@ button {
   background-color: #bbdefb;
 }
 
+.restore-button {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.restore-button:hover {
+  background-color: #c8e6c9;
+}
+
 .delete-button {
   background-color: #ffebee;
   color: #d32f2f;
@@ -85,4 +94,13 @@ button {
 
 .delete-button:hover {
   background-color: #ffcdd2;
+}
+
+.delete-button.permanent {
+  background-color: #ff1744;
+  color: white;
+}
+
+.delete-button.permanent:hover {
+  background-color: #d50000;
 } 

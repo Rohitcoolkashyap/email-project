@@ -3,6 +3,7 @@ import { EmailProvider } from './context/EmailContext';
 import EmailList from './components/EmailList';
 import EmailDetail from './components/EmailDetail';
 import SearchBar from './components/SearchBar';
+import CategorySelector from './components/CategorySelector';
 import './App.css';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         </header>
         
         <main className="app-main">
+          <CategorySelector />
           {selectedEmail ? (
             <EmailDetail 
               email={selectedEmail} 

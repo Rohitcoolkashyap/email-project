@@ -5,9 +5,11 @@ import './EmailList.css';
 
 const EmailList = ({ onSelectEmail }) => {
   const { state } = useEmail();
-  const { emails, searchQuery } = state;
+  const { emails, trashedEmails, searchQuery, currentCategory } = state;
 
-  const filteredEmails = emails.filter(email => {
+  const currentEmails = currentCategory === 'inbox' ? emails : trashedEmails;
+
+  const filteredEmails = currentEmails.filter(email => {
     const searchTerm = searchQuery.toLowerCase();
     return (
       email.sender.toLowerCase().includes(searchTerm) ||
@@ -23,10 +25,15 @@ const EmailList = ({ onSelectEmail }) => {
           key={email.id}
           email={email}
           onSelect={() => onSelectEmail(email)}
+          isTrash={currentCategory === 'trash'}
         />
       ))}
       {filteredEmails.length === 0 && (
-        <div className="no-emails">No emails found</div>
+        <div className="no-emails">
+          {searchQuery 
+            ? 'No emails found matching your search'
+            : `No emails in ${currentCategory}`}
+        </div>
       )}
     </div>
   );

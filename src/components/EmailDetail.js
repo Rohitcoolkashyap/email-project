@@ -3,15 +3,25 @@ import { useEmail } from '../context/EmailContext';
 import './EmailDetail.css';
 
 const EmailDetail = ({ email, onClose }) => {
-  const { dispatch } = useEmail();
+  const { state, dispatch } = useEmail();
   const formattedDate = new Date(email.time).toLocaleString();
+  const isTrash = state.currentCategory === 'trash';
 
   const handleToggleRead = () => {
     dispatch({ type: 'TOGGLE_READ', payload: email.id });
   };
 
   const handleDelete = () => {
-    dispatch({ type: 'DELETE_EMAIL', payload: email.id });
+    if (isTrash) {
+      dispatch({ type: 'PERMANENT_DELETE', payload: email.id });
+    } else {
+      dispatch({ type: 'DELETE_EMAIL', payload: email.id });
+    }
+    onClose();
+  };
+
+  const handleRestore = () => {
+    dispatch({ type: 'RESTORE_EMAIL', payload: email.id });
     onClose();
   };
 
@@ -19,15 +29,26 @@ const EmailDetail = ({ email, onClose }) => {
     <div className="email-detail">
       <div className="email-detail-header">
         <button onClick={onClose} className="back-button">
-          Back to Inbox
+          Back to {isTrash ? 'Trash' : 'Inbox'}
         </button>
         <div className="actions">
           <button onClick={handleToggleRead} className="read-button">
             {email.isRead ? 'Mark as Unread' : 'Mark as Read'}
           </button>
-          <button onClick={handleDelete} className="delete-button">
-            Delete
-          </button>
+          {isTrash ? (
+            <>
+              <button onClick={handleRestore} className="restore-button">
+                Restore
+              </button>
+              <button onClick={handleDelete} className="delete-button permanent">
+                Delete Permanently
+              </button>
+            </>
+          ) : (
+            <button onClick={handleDelete} className="delete-button">
+              Move to Trash
+            </button>
+          )}
         </div>
       </div>
       
