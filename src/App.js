@@ -1,24 +1,33 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import { EmailProvider } from './context/EmailContext';
+import EmailList from './components/EmailList';
+import EmailDetail from './components/EmailDetail';
+import SearchBar from './components/SearchBar';
 import './App.css';
 
 function App() {
+  const [selectedEmail, setSelectedEmail] = useState(null);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <EmailProvider>
+      <div className="App">
+        <header className="app-header">
+          <h1>Email Client</h1>
+          <SearchBar />
+        </header>
+        
+        <main className="app-main">
+          {selectedEmail ? (
+            <EmailDetail 
+              email={selectedEmail} 
+              onClose={() => setSelectedEmail(null)} 
+            />
+          ) : (
+            <EmailList onSelectEmail={setSelectedEmail} />
+          )}
+        </main>
+      </div>
+    </EmailProvider>
   );
 }
 
